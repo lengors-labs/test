@@ -71,6 +71,7 @@ jobs:
           # semantic-release bundles none of these, so they are installed here.
           extra_plugins: |
             semantic-release-gitmoji
+            @semantic-release/exec
             @jno21/semantic-release-github-commit
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

@@ -106,13 +106,21 @@ module.exports = {
       },
     }],
 
+    // Writes the derived version into a file on disk. This is the step a
+    // language template replaces with its own `versions:set`.
+    ['@semantic-release/exec', {
+      prepareCmd: 'echo ${nextRelease.version} > VERSION',
+    }],
+
     // Commits the release artefacts through the GitHub API instead of a local
     // `git commit`, so the commit is created — and therefore signed — by
     // GitHub itself. No GPG key is involved: the signature exists because the
     // request is authenticated as the App and carries no custom author or
     // committer. Do NOT set GIT_AUTHOR_* / GIT_COMMITTER_* to the bot identity
     // in the workflow; doing so is read as a custom identity and silently
-    // disables verification.
+    // disables verification. This must come after every prepare step that
+    // writes a committed file, and the file must actually change — the plugin
+    // skips the commit when the resulting tree matches the base tree.
     ['@jno21/semantic-release-github-commit', {
       files: ['VERSION'],
       commitMessage: '🔖 Update `VERSION` to `${nextRelease.version}`',
