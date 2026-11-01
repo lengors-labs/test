@@ -106,6 +106,18 @@ module.exports = {
       },
     }],
 
+    // Commits the release artefacts through the GitHub API instead of a local
+    // `git commit`, so the commit is created — and therefore signed — by
+    // GitHub itself. No GPG key is involved: the signature exists because the
+    // request is authenticated as the App and carries no custom author or
+    // committer. Do NOT set GIT_AUTHOR_* / GIT_COMMITTER_* to the bot identity
+    // in the workflow; doing so is read as a custom identity and silently
+    // disables verification.
+    ['@jno21/semantic-release-github-commit', {
+      files: ['VERSION'],
+      commitMessage: '🔖 Update `VERSION` to `${nextRelease.version}`',
+    }],
+
     // Publishes the GitHub release and pushes the tags. The notes generated
     // above become the release body, which is why no `CHANGELOG.md` is written:
     // without `@semantic-release/git` the file would be discarded with the
