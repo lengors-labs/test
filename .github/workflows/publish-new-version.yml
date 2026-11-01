@@ -71,9 +71,18 @@ jobs:
           # semantic-release bundles none of these, so they are installed here.
           extra_plugins: |
             semantic-release-gitmoji
+            @semantic-release/exec
+            @jno21/semantic-release-github-commit
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          GIT_AUTHOR_NAME: ${{ steps.app-identity.outputs.name }}
-          GIT_AUTHOR_EMAIL: ${{ steps.app-identity.outputs.email }}
-          GIT_COMMITTER_NAME: ${{ steps.app-identity.outputs.name }}
-          GIT_COMMITTER_EMAIL: ${{ steps.app-identity.outputs.email }}
+          # Deliberately no GIT_AUTHOR_* / GIT_COMMITTER_* overrides: the commit
+          # API reads any custom identity as an opt-out of GitHub's signature.
+
+      # The plugin rewrites `origin` to an inline-auth URL and never reverts it,
+      # so the installation token is left in .git/config for the rest of the job.
+      - name: Scrub the token from the git remote
+        if: always()
+        run: |
+          set -euo pipefail
+          git remote set-url origin \
+            "https://github.com/${{ github.repository }}.git"
